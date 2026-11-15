@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#101513" />
+  <title>LAST STAND — Deadwood County</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&family=Oswald:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="game-shell">
+    <canvas id="world" aria-label="Deadwood County survival game"></canvas>
+    <div class="vignette"></div>
+    <header class="topbar">
+      <div class="brand"><div class="brand-mark">LS<span>·</span></div><div><div class="brand-name">LAST STAND</div><div class="brand-sub">DEADWOOD COUNTY <i>•</i> SURVIVOR #0481</div></div></div>
+      <div class="world-state"><span class="live-dot"></span><span id="weather">OVERCAST</span><span class="state-divider"></span><span id="clock">06:42</span><span class="state-divider"></span><span class="population">◈ <b id="infected-count">0</b> INFECTED NEARBY</span></div>
+      <button class="icon-btn map-btn" id="map-toggle" aria-label="Toggle map">⌖ <span>MAP</span></button>
+    </header>
+    <section class="left-rail">
+      <div class="location-card"><div class="eyebrow">CURRENT LOCATION</div><div class="location-name" id="location-name">PINE RIDGE</div><div class="location-meta"><span class="signal-icon">⌁</span> <span id="location-detail">RURAL OUTSKIRTS</span></div></div>
+      <div class="survival-card panel"><div class="panel-heading"><span>CONDITION</span><span class="small-label">STABLE</span></div>
+        <div class="stat-row"><div class="stat-icon heart">♥</div><div class="stat-content"><div class="stat-label"><span>HEALTH</span><b id="health-value">100</b></div><div class="meter"><i class="health-fill" id="health-bar"></i></div></div></div>
+        <div class="stat-row"><div class="stat-icon food">◒</div><div class="stat-content"><div class="stat-label"><span>HUNGER</span><b id="hunger-value">82</b></div><div class="meter"><i class="food-fill" id="hunger-bar"></i></div></div></div>
+        <div class="stat-row"><div class="stat-icon water">◉</div><div class="stat-content"><div class="stat-label"><span>HYDRATION</span><b id="thirst-value">68</b></div><div class="meter"><i class="water-fill" id="thirst-bar"></i></div></div></div>
+        <div class="stat-row"><div class="stat-icon temp">♨</div><div class="stat-content"><div class="stat-label"><span>BODY TEMP</span><b id="temp-value">36.8°</b></div><div class="meter"><i class="temp-fill" id="temp-bar"></i></div></div></div>
+        <div class="stat-row stamina-row"><div class="stat-icon stamina">ϟ</div><div class="stat-content"><div class="stat-label"><span>STAMINA</span><b id="stamina-value">100</b></div><div class="meter"><i class="stamina-fill" id="stamina-bar"></i></div></div></div>
+      </div>
+      <div class="objective panel"><div class="objective-icon">✳</div><div><div class="eyebrow">FIELD NOTE <span>01</span></div><p>Find clean water.<br><b>The old settlement may have supplies.</b></p></div></div>
+    </section>
+    <section class="right-rail">
+      <div class="compass panel"><div class="compass-top"><span>COMPASS</span><span class="coordinates" id="coords">N 04° · E 12°</span></div><div class="compass-dial"><span class="dir north">N</span><span class="dir east">E</span><span class="dir south">S</span><span class="dir west">W</span><i class="needle"></i><b class="compass-center">+</b></div><div class="bearing"><span id="bearing">NE</span><span class="bearing-line"></span><span>BEARING</span></div></div>
+      <div class="nearby panel"><div class="panel-heading"><span>NEARBY</span><span class="small-label" id="nearby-count">0 SIGNALS</span></div><div class="nearby-list" id="nearby-list"><div class="empty-nearby"><span>⌁</span> No points of interest</div></div></div>
+    </section>
+    <div class="bottom-left"><div class="equipped"><div class="equip-art" id="equip-art">⌁</div><div><div class="eyebrow">IN HAND</div><div class="equip-name" id="equip-name">FIELD KNIFE</div><div class="equip-condition"><span id="equip-condition">WORN · 68%</span><i><b></b></i></div></div><kbd>1</kbd></div><div class="quickbar" id="quickbar"></div></div>
+    <div class="bottom-right"><div class="noise-indicator"><span class="noise-wave">)))</span><div><div class="eyebrow">NOISE</div><div id="noise-level">QUIET</div></div></div><div class="hint" id="action-hint"><kbd>E</kbd> <span>SEARCH NEARBY</span></div></div>
+    <div class="crosshair"><i></i><b></b></div>
+    <div class="toast" id="toast"></div>
+    <div class="modal-backdrop hidden" id="modal-backdrop"><section class="inventory-modal panel" id="modal"><header class="modal-head"><div><div class="eyebrow">SURVIVOR KIT</div><h1 id="modal-title">FIELD INVENTORY</h1></div><button class="close-btn" id="close-modal">ESC <span>×</span></button></header><div class="inventory-layout"><div class="inventory-main"><div class="inventory-tabs"><button class="tab active" data-tab="all">ALL ITEMS <b id="item-count">0</b></button><button class="tab" data-tab="consumables">SUPPLIES</button><button class="tab" data-tab="gear">GEAR</button></div><div class="item-grid" id="item-grid"></div><div class="inventory-footer"><span>CAPACITY</span><div class="capacity-meter"><i id="capacity-bar"></i></div><b id="capacity-text">0 / 24 KG</b></div></div><aside class="item-detail" id="item-detail"><div class="detail-empty">SELECT AN ITEM<br><span>to inspect or use it</span></div></aside></div><div class="modal-foot"><span>SCAVENGE. ADAPT. SURVIVE.</span><span><kbd>I</kbd> CLOSE INVENTORY</span></div></section></div>
+    <div class="map-overlay hidden" id="map-overlay"><div class="map-panel panel"><header><div><div class="eyebrow">DEADWOOD COUNTY · SECTOR 04</div><h2>FIELD MAP</h2></div><button class="close-btn map-close">ESC <span>×</span></button></header><canvas id="map-canvas" width="560" height="420"></canvas><div class="map-legend"><span><i class="legend-player"></i> YOU</span><span><i class="legend-town"></i> SETTLEMENT</span><span><i class="legend-danger"></i> INFECTED</span><span>⌖ EXPLORE TO REVEAL</span></div></div></div>
+    <div class="start-screen" id="start-screen"><div class="start-grain"></div><div class="start-content"><div class="start-kicker"><span class="live-dot"></span> EMERGENCY BROADCAST · DAY 06</div><div class="start-title">THE WORLD<br><span>WENT QUIET.</span></div><p class="start-copy">The grid fell three weeks ago. The roads are empty.<br>They aren't as empty as they look.</p><div class="start-rule"></div><div class="start-meta"><span>DEADWOOD COUNTY, OR</span><span>LOCAL TIME <b>06:42 AM</b></span></div><button class="deploy-btn" id="deploy"><span>DEPLOY SURVIVOR</span><b>→</b></button><div class="start-controls">W A S D <span>MOVE</span><i>·</i> SHIFT <span>SPRINT</span><i>·</i> E <span>INTERACT</span></div></div><div class="start-coordinates">44° 03' 12.4" N<br>121° 18' 09.8" W</div><div class="start-version">SURVIVAL BUILD 0.4.81 <span>●</span> OFFLINE MODE</div></div>
+    <div class="mobile-controls"><button id="mobile-use">USE</button><button id="mobile-run">RUN</button><div class="touch-pad"><i></i><button data-dir="up">▲</button><button data-dir="left">◀</button><button data-dir="down">▼</button><button data-dir="right">▶</button></div></div>
+    <footer class="bottom-bar"><span>DAY 06 <i>·</i> 21 DAYS SINCE OUTBREAK</span><span>WASD MOVE <i>·</i> SHIFT SPRINT <i>·</i> E INTERACT <i>·</i> I INVENTORY <i>·</i> M MAP</span><span>44.05° N&nbsp; 121.30° W</span></footer>
+  </main>
+  <script src="game.js"></script>
+</body>
+</html>
