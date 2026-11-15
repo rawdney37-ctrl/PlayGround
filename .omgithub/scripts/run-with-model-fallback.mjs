@@ -24,14 +24,19 @@ export function modelCandidates(selected, live = null, chain = defaultModelChain
 export function resolveRunModels({ selected, live = null, fusionEnabled = false, requireShared = false, forceSharedTest = false, route = 'none', adminChain = null, modelList = null }) {
   if (requireShared) {
     if (!fusionEnabled) throw new Error('Required shared Fusion plugin unavailable; refusing free-model fallback')
-    // Preserve an explicit connected paid-provider choice outside admin test mode.
-    if (selected && selected !== fusionModel && !freeEgressModel(selected) && !forceSharedTest) return { model: selected, models: [selected, fusionModel] }
-    return { model: fusionModel, models: [fusionModel] }
+    // Only the admin forced-shared test is Fusion-only. A shared checkout merely supplies the
+    // shared credential; the saved model list keeps its order so a 401/503 can fall back.
+    if (forceSharedTest) return { model: fusionModel, models: [fusionModel] }
+    // Preserve an explicit connected paid-provider choice.
+    if (selected && selected !== fusionModel && !freeEgressModel(selected)) return { model: selected, models: [selected, fusionModel] }
   }
   if (Array.isArray(modelList) && modelList.length) {
     const steps = modelList.filter(row => row && typeof row.model === 'string').map(row => ({ id: String(row.id || row.model), model: row.model, route: ['direct', 'warp', 'backup', 'api'].includes(row.route) ? row.route : 'direct' }))
     const picked = selected ? steps.findIndex(row => row.model === selected || row.id === selected) : -1
-    const ordered = picked >= 0 ? [{ ...steps[picked] }, ...steps.filter((_, index) => index !== picked)] : steps
+    const fusion = steps.filter(row => row.model === fusionModel)
+    const ordered = picked >= 0
+      ? [{ ...steps[picked] }, ...steps.filter((_, index) => index !== picked)]
+      : [...fusion, ...steps.filter(row => row.model !== fusionModel)]
     const extra = selected && picked < 0 ? [{ id: selected, model: selected, route: route === 'warp' ? 'warp' : 'direct' }, ...ordered] : ordered
     return { model: extra[0].model, models: extra.map(row => row.model), routes: extra.map(row => row.route), steps: extra }
   }
@@ -192,14 +197,17 @@ export async function runModels({ binary, port, promptFile, logFile, exitFile, s
   const directory = dirname(logFile), prompt = readFileSync(promptFile, 'utf8')
   const requiredShared = env.FUSION_REQUIRE_SHARED === 'true'
   if (requiredShared && env.FUSION_ROUTE !== 'shared') throw new Error('Required shared Fusion route unavailable')
-  const strictFusion = requiredShared && (env.FUSION_FORCE_SHARED_TEST === 'true' || !selected || selected === fusionModel || freeEgressModel(selected)) || env.FUSION_ROUTE === 'own' && selected === fusionModel
-  const candidates = strictFusion ? [fusionModel] : models.filter(model => !requiredShared || !freeEgressModel(model))
+  const strictFusion = env.FUSION_FORCE_SHARED_TEST === 'true' || env.FUSION_ROUTE === 'own' && selected === fusionModel
+  const candidates = strictFusion ? [fusionModel] : models
   if (!candidates.length || candidates.some(model => typeof model !== 'string' || !/^[\w.-]+\/[\w./:-]+$/.test(model))) throw new Error('Invalid model fallback candidates')
   // The saved model list already carries order and route; do not reorder or append.
   const queue = candidates
   const routeList = Array.isArray(routes) ? routes : queue.map(() => 'direct')
   let sessionID = env.RESUME_SESSION_ID || '', child, interrupted = false, code = 1
   const attempts = []
+  // A spent free-model quota belongs to one egress: later rows with the same model and route
+  // are pointless, while the same model behind WARP is a different egress and still gets a turn.
+  const spentEgress = new Set()
   let fusionSwitched = false, dropped = false
   const stop = signal => { interrupted = true; child?.kill(signal) }
   const onTerm = () => stop('SIGTERM'), onInt = () => stop('SIGINT')
@@ -208,6 +216,11 @@ export async function runModels({ binary, port, promptFile, logFile, exitFile, s
     for (let index = 0; index < queue.length; index++) {
       const model = queue[index]
       if (interrupted) break
+      const egress = `${model}|${routeList[index]}`
+      if (spentEgress.has(egress)) {
+        appendFileSync(logFile, `[model-fallback] Skipping ${model} on ${routeList[index]}: free quota already spent for this egress.\n`)
+        continue
+      }
       if (lazyProxy && routeList[index] === 'warp') {
         const setup = lazyProxy; lazyProxy = null
         appendFileSync(logFile, '[model-fallback] Reached a WARP model row; setting up the WARP proxy now.\n')
@@ -252,6 +265,8 @@ export async function runModels({ binary, port, promptFile, logFile, exitFile, s
       else if (outcome === 'failed' || outcome === 'interrupted' || code === 0 && (failure || api)) code = 1
       const retryable = outcome !== 'interrupted' && (retryableProviderError(failure) || fusionFallbackError(model, failure))
       attempts.push({ model, cli_code: cliCode, outcome: outcome || 'unverified', code, retryable, error_class: code === 0 ? null : attemptErrorClass(failure) || (outcome === 'interrupted' ? null : 'other'), duration_ms: Date.now() - started })
+      // Free-model quota is per egress block; Fusion is a separate credential and keeps its rows.
+      if (code !== 0 && !interrupted && model !== fusionModel && attemptErrorClass(failure) === 'free-limit') spentEgress.add(egress)
       writeFileSync(join(directory, 'model-attempts.json'), JSON.stringify(attempts))
       await reportSessionStats({ api, sessionID, directory, env, attempts })
       await pingHeartbeat(env)
