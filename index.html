@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#0d120e" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <title>AFTERLIGHT — North Cascade</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%230d120e'/%3E%3Ctext x='50%25' y='56%25' text-anchor='middle' font-family='sans-serif' font-size='40' fill='%23c3d18c'%3EA%3C/text%3E%3C/svg%3E" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&family=Oswald:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="app">
+    <canvas id="game" aria-label="Afterlight survival world"></canvas>
+    <div id="vignette"></div>
+    <div id="damageFlash"></div>
+    <div id="lowHealth"></div>
+
+    <header id="topbar">
+      <div class="brand"><span class="brand-mark">A</span><span class="brand-word">AFTER<span>LIGHT</span></span></div>
+      <div class="location-block">
+        <span class="eyebrow">NORTH CASCADE</span>
+        <strong id="locationName">Pine Ridge</strong>
+      </div>
+      <div class="compass" id="compass">
+        <div class="compass-window"><div class="compass-ticks" id="compassTicks"></div></div>
+        <span class="compass-heading" id="compassHeading">N · 000°</span>
+      </div>
+      <div class="env-block">
+        <div class="clock"><strong id="clock">09:00</strong><span id="dayNum">DAY 01</span></div>
+        <div class="weather"><span id="weatherIcon">☼</span><div><strong id="weatherName">CLEAR</strong><small id="ambientTemp">18°C</small></div></div>
+      </div>
+      <nav class="top-actions">
+        <button id="mapBtn" class="icon-btn" title="Map (M)">⌖<span>MAP</span></button>
+        <button id="packBtn" class="icon-btn" title="Inventory (I)">▤<span>PACK</span></button>
+        <button id="craftBtn" class="icon-btn" title="Crafting (C)">⚒<span>CRAFT</span></button>
+        <button id="helpBtn" class="icon-btn" title="Help (H)">?<span>HELP</span></button>
+      </nav>
+    </header>
+
+    <section id="vitals" aria-label="Survivor condition">
+      <div class="vital health"><div class="vital-top"><span>HEALTH</span><b id="healthVal">100</b></div><div class="bar"><i id="healthBar"></i></div></div>
+      <div class="vital blood"><div class="vital-top"><span>BLOOD</span><b id="bloodVal">100</b></div><div class="bar"><i id="bloodBar"></i></div></div>
+      <div class="vital food"><div class="vital-top"><span>HUNGER</span><b id="foodVal">100</b></div><div class="bar"><i id="foodBar"></i></div></div>
+      <div class="vital water"><div class="vital-top"><span>THIRST</span><b id="waterVal">100</b></div><div class="bar"><i id="waterBar"></i></div></div>
+      <div class="vital temp"><div class="vital-top"><span>BODY °C</span><b id="tempVal">37.0</b></div><div class="bar"><i id="tempBar"></i></div></div>
+      <div class="vital stamina"><div class="vital-top"><span>STAMINA</span><b id="staminaVal">100</b></div><div class="bar"><i id="staminaBar"></i></div></div>
+      <div class="vital energy"><div class="vital-top"><span>ENERGY</span><b id="energyVal">100</b></div><div class="bar"><i id="energyBar"></i></div></div>
+      <div id="conditions" class="conditions"></div>
+    </section>
+
+    <section id="gear" aria-label="Equipment">
+      <div class="gear-row">
+        <div class="weapon-card">
+          <span class="eyebrow">EQUIPPED</span>
+          <strong id="weaponName">Bare hands</strong>
+          <div class="weapon-meta"><span id="ammoVal">—</span><span id="weaponCond">—</span></div>
+        </div>
+        <div class="quick-slots" id="quickSlots">
+          <button class="quick" data-slot="0"><kbd>1</kbd><span id="qs0">—</span></button>
+          <button class="quick" data-slot="1"><kbd>2</kbd><span id="qs1">—</span></button>
+          <button class="quick" data-slot="2"><kbd>3</kbd><span id="qs2">—</span></button>
+        </div>
+      </div>
+      <div class="status-line"><span id="stanceLabel">STANDING</span><span id="noiseLabel">QUIET</span><span id="torchLabel">TORCH OFF</span></div>
+    </section>
+
+    <div id="crosshair"><i></i><b></b></div>
+    <div id="hitmarker"></div>
+    <div id="threat"><span></span>INFECTED NEARBY</div>
+    <div id="prompt"><kbd>E</kbd><span id="promptText"></span></div>
+    <div id="toasts"></div>
+    <div id="objective">
+      <span class="obj-pin">✦</span>
+      <div><small>FIELD NOTE</small><span id="objectiveText">Find clean water and something to eat.</span></div>
+      <button id="objectiveNext" aria-label="Next note">→</button>
+    </div>
+
+    <div id="mobileControls">
+      <div id="joystick" class="joystick"><div class="joystick-ring"></div><div id="joyKnob" class="joy-knob"></div></div>
+      <div id="lookHint" class="look-hint">DRAG TO LOOK</div>
+      <div class="touch-cluster">
+        <button id="btnUse" class="tbtn use">USE</button>
+        <button id="btnAim" class="tbtn small">AIM</button>
+        <button id="btnAttack" class="tbtn attack">HIT</button>
+        <button id="btnReload" class="tbtn small">R<small>RELOAD</small></button>
+        <button id="btnJump" class="tbtn small">↑<small>JUMP</small></button>
+        <button id="btnCrouch" class="tbtn small">▼<small>CROUCH</small></button>
+        <button id="btnTorch" class="tbtn small">☼<small>TORCH</small></button>
+        <button id="btnBuild" class="tbtn small">⚒<small>BUILD</small></button>
+        <button id="btnView" class="tbtn small">CAM</button>
+      </div>
+    </div>
+
+    <div id="overlay" hidden><div id="modal" role="dialog" aria-modal="true"></div></div>
+
+    <div id="startScreen">
+      <div class="start-inner">
+        <div class="start-head">
+          <span class="start-tag">NORTH CASCADE · QUARANTINE ZONE</span>
+          <h1>AFTER<span>LIGHT</span></h1>
+          <p class="start-sub">A hardcore open-world survival sandbox. Scavenge, treat your wounds, fortify a shelter, and outlast the infected.</p>
+        </div>
+        <div class="start-grid">
+          <div class="char-select">
+            <span class="eyebrow">CHOOSE SURVIVOR</span>
+            <div class="char-options">
+              <button class="char-card selected" data-gender="female" data-name="Mara">
+                <span class="char-silhouette female"></span>
+                <strong>MARA VOSS</strong><small>Field medic · Fast learner</small>
+              </button>
+              <button class="char-card" data-gender="male" data-name="Elias">
+                <span class="char-silhouette male"></span>
+                <strong>ELIAS KANE</strong><small>Ex-ranger · Strong back</small>
+              </button>
+            </div>
+            <span class="eyebrow">JACKET COLOUR</span>
+            <div class="swatches" id="swatches">
+              <button class="swatch active" data-color="#5c6b45" style="--sw:#5c6b45"></button>
+              <button class="swatch" data-color="#6b5140" style="--sw:#6b5140"></button>
+              <button class="swatch" data-color="#3e4d57" style="--sw:#3e4d57"></button>
+              <button class="swatch" data-color="#6d6350" style="--sw:#6d6350"></button>
+            </div>
+          </div>
+          <div class="start-brief">
+            <span class="eyebrow">SURVIVAL BRIEF</span>
+            <ul>
+              <li><b>Explore</b> towns, farms, a clinic, military blacksite and the backcountry.</li>
+              <li><b>Scavenge</b> food, water, medicine, weapons and building materials.</li>
+              <li><b>Survive</b> hunger, thirst, blood loss, infection and the cold.</li>
+              <li><b>Fortify</b> a base with walls, doors, storage and a campfire.</li>
+              <li><b>Outlast</b> walkers, runners, brutes, armoured dead and screechers.</li>
+            </ul>
+            <button id="startBtn" class="start-btn">ENTER THE CASCADE</button>
+            <button id="startHelp" class="text-btn">Controls &amp; field manual</button>
+          </div>
+        </div>
+        <p class="start-foot">Desktop: click to capture mouse · WASD · E · Space · X crouch · C craft · B build · I pack · M map<br>Mobile: left joystick to move · drag to look · buttons to act</p>
+      </div>
+    </div>
+
+    <div id="loading"><div class="load-mark">A</div><p>GENERATING NORTH CASCADE</p><div class="load-track"><i id="loadBar"></i></div></div>
+  </div>
+  <script type="module" src="game.js"></script>
+</body>
+</html>
