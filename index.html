@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#101611" />
+  <title>AFTERLIGHT — Survival</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23101611'/%3E%3Ctext x='16' y='24' font-family='monospace' font-size='22' fill='%23c8e27b' text-anchor='middle'%3EA%3C/text%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&family=Oswald:wght@500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="extras.css" />
+</head>
+<body>
+  <main id="game-shell">
+    <canvas id="world" aria-label="Survival game world"></canvas>
+    <div class="grain"></div>
+
+    <header class="topbar">
+      <a class="brand" href="#" aria-label="Afterlight"><span class="brand-mark">A</span><span>AFTER<span class="brand-dim">LIGHT</span></span></a>
+      <div class="location"><span class="live-dot"></span><div><b id="location-name">CEDAR COUNTY</b><small id="location-sub">PINE RIDGE · 07:00</small></div></div>
+      <div class="top-actions">
+        <button class="icon-btn" id="build-btn" aria-label="Build">⌂</button>
+        <button class="icon-btn" id="craft-btn" aria-label="Craft">✚</button>
+        <button class="icon-btn" id="map-btn" aria-label="Open map">⌖</button>
+        <button class="icon-btn" id="bag-btn" aria-label="Open inventory">▤</button>
+        <button class="icon-btn" id="pause-btn" aria-label="Pause">Ⅱ</button>
+      </div>
+    </header>
+
+    <section class="left-stack">
+      <div class="status-card panel">
+        <div class="card-label"><span>CONDITION</span><span class="status-state" id="condition-text">STABLE</span></div>
+        <div class="vitals">
+          <div class="vital"><span class="vital-icon heart">♥</span><div class="vital-info"><div class="vital-line"><span>HEALTH</span><b id="health-num">100</b></div><div class="meter"><i id="health-bar" class="health-fill" style="width:100%"></i></div></div></div>
+          <div class="vital"><span class="vital-icon">◉</span><div class="vital-info"><div class="vital-line"><span>STAMINA</span><b id="stamina-num">100</b></div><div class="meter"><i id="stamina-bar" style="width:100%"></i></div></div></div>
+          <div class="vital"><span class="vital-icon water">◒</span><div class="vital-info"><div class="vital-line"><span>HYDRATION</span><b id="water-num">74</b></div><div class="meter"><i id="water-bar" class="water-fill" style="width:74%"></i></div></div></div>
+          <div class="vital"><span class="vital-icon food">◉</span><div class="vital-info"><div class="vital-line"><span>NOURISHMENT</span><b id="food-num">78</b></div><div class="meter"><i id="food-bar" class="food-fill" style="width:78%"></i></div></div></div>
+        </div>
+        <div class="vitals mini-vitals">
+          <div class="mini-stat"><span>BLOOD</span><b id="blood-num">100</b></div>
+          <div class="mini-stat"><span>FATIGUE</span><b id="fatigue-num">12</b></div>
+          <div class="mini-stat"><span>WARMTH</span><b id="warmth-num">36.8°</b></div>
+        </div>
+        <div class="conditions" id="conditions"></div>
+        <div class="condition-foot"><span>BODY TEMP</span><b id="temp">36.8° C</b><span class="divider"></span><span>PACK</span><b id="weight">4.8 / 16 kg</b></div>
+      </div>
+      <div class="threat-card panel"><div class="threat-icon">⌁</div><div><span class="card-label">THREAT LEVEL</span><b id="threat-level">QUIET</b></div><span class="threat-pips"><i></i><i></i><i></i><i></i></span></div>
+    </section>
+
+    <section class="right-stack">
+      <div class="compass panel"><span>N</span><i></i><span id="bearing">NE</span></div>
+      <div class="weapon-card panel">
+        <div class="card-label"><span>EQUIPPED</span><span id="weapon-type">MELEE</span></div>
+        <b id="weapon-name">HATCHET</b>
+        <div class="weapon-meta"><span id="weapon-ammo">—</span><span id="weapon-cond">100%</span></div>
+        <div class="meter"><i id="weapon-bar" style="width:100%"></i></div>
+      </div>
+      <div class="objective panel">
+        <div class="objective-top"><span class="objective-kicker">FIELD NOTE <span id="objective-index">01</span></span><span class="pin">⌖</span></div>
+        <h2 id="objective-title">Find clean water.</h2>
+        <p id="objective-text">Search the settlement for supplies. Keep your distance from the infected.</p>
+        <div class="objective-progress"><span id="objective-count">0 / 6 NOTES</span><div class="meter"><i id="objective-bar" style="width:0%"></i></div></div>
+      </div>
+    </section>
+
+    <div class="interaction-hint" id="interaction-hint"><span class="keycap" id="hint-key">E</span><span id="hint-text">SEARCH SUPPLY</span></div>
+    <div class="toast" id="toast"></div>
+    <div class="crosshair"><i></i><i></i></div>
+
+    <div class="bottom-ui">
+      <div class="hotbar panel"><div class="hotbar-label">QUICK ACCESS <span>1 — 5</span></div><div class="slots" id="hotbar">
+        <button class="slot active" data-slot="0"><span class="slot-key">1</span><span class="slot-item">✦</span><small id="slot-melee">HATCHET</small></button>
+        <button class="slot" data-slot="1"><span class="slot-key">2</span><span class="slot-item">⌁</span><small id="slot-gun">FIREARM</small><span class="slot-badge" id="slot-ammo">0</span></button>
+        <button class="slot" data-slot="2"><span class="slot-key">3</span><span class="slot-item">✚</span><small id="slot-bandage">BANDAGE</small></button>
+        <button class="slot" data-slot="3"><span class="slot-key">4</span><span class="slot-item">◉</span><small id="slot-water">WATER</small></button>
+        <button class="slot" data-slot="4"><span class="slot-key">5</span><span class="slot-item">◇</span><small id="slot-food">FOOD</small></button>
+      </div></div>
+      <div class="action-hints"><span><kbd>W A S D</kbd> MOVE</span><span><kbd>SHIFT</kbd> SPRINT</span><span><kbd>X</kbd> CROUCH</span><span><kbd>F</kbd> ATTACK</span><span><kbd>E</kbd> USE</span><span><kbd>B</kbd> BUILD</span><span><kbd>C</kbd> CRAFT</span><span><kbd>I</kbd> PACK</span></div>
+      <div class="sound-indicator"><span class="sound-ring"></span><span>ACOUSTIC<br>PROFILE</span><b id="noise-label">LOW</b></div>
+    </div>
+
+    <div class="touch-controls" id="touch-controls">
+      <div class="joystick" id="joystick"><div class="joy-knob" id="joy-knob"></div></div>
+      <button class="touch-crouch" id="touch-crouch">CROUCH</button>
+      <div class="touch-buttons"><button id="touch-run">RUN</button><button id="touch-hit" class="hit-btn">HIT</button><button id="touch-use">USE</button></div>
+    </div>
+
+    <div class="overlay" id="start-screen">
+      <div class="title-mark"><span>AFTER</span><i>LIGHT</i></div>
+      <div class="title-line"></div>
+      <p class="eyebrow">A CEDAR COUNTY SURVIVAL LOG</p>
+      <h1>THE WORLD<br>WENT <em>QUIET.</em></h1>
+      <p class="intro-copy">Three weeks since the last broadcast.<br>Take what you need. Leave no trace.</p>
+      <div class="survivor-select" id="survivor-select">
+        <button class="survivor-card active" data-survivor="ava"><b>AVA REYES</b><small>Field medic · starts with bandages</small></button>
+        <button class="survivor-card" data-survivor="marcus"><b>MARCUS COLE</b><small>Scavenger · starts with a crowbar</small></button>
+      </div>
+      <div class="start-meta"><span><b>DAY 01</b> · 07:00 AM</span><span>CEDAR COUNTY, OR</span></div>
+      <button id="start-btn" class="primary-btn">ENTER THE WILDS <span>↗</span></button>
+      <button id="continue-btn" class="ghost-btn hidden">CONTINUE SAVED RUN</button>
+      <div class="feature-chips"><span>OPEN COUNTY</span><span>DISEASE &amp; WOUNDS</span><span>BASE BUILDING</span><span>VEHICLES</span><span>WILDLIFE</span><span>DAY / NIGHT</span></div>
+      <div class="start-foot">SINGLE PLAYER · SURVIVAL SIMULATION <span>V 0.2.0</span></div>
+    </div>
+
+    <div class="modal hidden" id="modal"><div class="modal-card"><button class="modal-close" id="modal-close">×</button><p class="eyebrow" id="modal-kicker">SURVIVOR'S PACK</p><h2 id="modal-title">Inventory</h2><div id="modal-body"></div></div></div>
+
+    <div class="dead-screen hidden" id="dead-screen">
+      <p class="eyebrow">SURVIVAL LOG · FINAL ENTRY</p>
+      <h1>THE WILDS<br>WON.</h1>
+      <p id="death-cause">Your story ends here. The county keeps its secrets.</p>
+      <div class="death-stats" id="death-stats"></div>
+      <button id="restart-btn" class="primary-btn">TRY AGAIN <span>↻</span></button>
+    </div>
+
+    <div class="weather-overlay" id="weather-overlay"></div>
+  </main>
+  <script src="game.js"></script>
+</body>
+</html>

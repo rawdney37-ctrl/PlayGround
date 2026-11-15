@@ -1,0 +1,147 @@
+/* AFTERLIGHT — extended systems UI */
+:root{--amber:#d8b56a;--blood:#c86052;--cold:#9ec8d8}
+
+.panel{backdrop-filter:blur(7px)}
+
+/* compact survival stats */
+.mini-vitals{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:9px 0 2px;padding-top:9px;border-top:1px solid #ffffff14}
+.mini-stat{display:flex;flex-direction:column;gap:3px;font-family:var(--mono)}
+.mini-stat span{font-size:8px;letter-spacing:.8px;color:var(--dim)}
+.mini-stat b{font-size:11px;font-weight:500;color:#dfe4d6}
+.conditions{display:flex;flex-wrap:wrap;gap:4px;margin-top:8px;min-height:0}
+.conditions:empty{display:none}
+.cond-chip{font:8px var(--mono);letter-spacing:.6px;padding:3px 6px;border:1px solid #ffffff26;background:#ffffff0a;color:#cfd5c8;text-transform:uppercase}
+.cond-chip.hot{border-color:#e1776480;color:#f0b3a8;background:#4a242066}
+.cond-chip.cold{border-color:#9ec8d860;color:#c4e4ef;background:#1f394466}
+
+/* weapon panel */
+.weapon-card{margin-top:0;padding:13px 14px}
+.weapon-card .card-label{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:9px}
+.weapon-card .card-label span:last-child{color:#8d978a;font-size:8px}
+.weapon-card>b{display:block;font:500 17px var(--display);letter-spacing:1px;margin-bottom:6px;color:#edf0e5}
+.weapon-meta{display:flex;justify-content:space-between;font:9px var(--mono);color:#aeb6a8;margin-bottom:5px}
+.weapon-card .meter{height:3px}
+
+/* hotbar ammo badge */
+.slot{position:relative}
+.slot-badge{position:absolute;top:4px;right:4px;min-width:15px;height:15px;padding:0 3px;display:grid;place-items:center;background:#0c120e;border:1px solid #ffffff33;border-radius:8px;font:8px var(--mono);color:var(--lime)}
+
+/* start screen additions */
+.survivor-select{display:flex;gap:9px;margin:22px 0 4px;flex-wrap:wrap;justify-content:center}
+.survivor-card{width:214px;padding:11px 13px;text-align:left;background:#0e150fcc;border:1px solid #ffffff24;cursor:pointer;transition:.18s}
+.survivor-card:hover{border-color:#c8e27b77;background:#142016cc}
+.survivor-card.active{border-color:var(--lime);box-shadow:inset 0 0 0 1px #c8e27b44}
+.survivor-card b{display:block;font:500 14px var(--display);letter-spacing:1.4px;color:#edf0e4}
+.survivor-card small{display:block;margin-top:4px;font:9px var(--mono);color:#9aa495;line-height:1.5}
+.feature-chips{display:flex;gap:5px;flex-wrap:wrap;justify-content:center;margin-top:16px;max-width:560px}
+.feature-chips span{font:8px var(--mono);letter-spacing:.7px;padding:4px 7px;border:1px solid #ffffff1f;color:#9da796;background:#0d130eaa}
+.ghost-btn{margin-top:9px;padding:10px 24px;background:transparent;border:1px solid #ffffff38;color:#cfd5c7;font:10px var(--mono);letter-spacing:1.4px;cursor:pointer}
+.ghost-btn:hover{border-color:#c8e27b88;color:#eef1e6}
+
+/* generic buttons inside panels */
+.mini-btn{padding:5px 8px;background:#ffffff0d;border:1px solid #ffffff2a;color:#c9d0c0;font:8px var(--mono);letter-spacing:.7px;cursor:pointer;text-transform:uppercase}
+.mini-btn:hover{border-color:#c8e27b88;color:#f1f4e9}
+.mini-btn.danger:hover{border-color:#e17764;color:#ffc8bc}
+.mini-btn:disabled{opacity:.35;cursor:not-allowed}
+.mini-btn.on{border-color:var(--lime);color:var(--lime);background:#c8e27b14}
+
+/* modal */
+.modal-card{width:min(620px,92vw);max-height:88dvh;overflow:auto;overscroll-behavior:contain}
+.modal-card::-webkit-scrollbar{width:5px}
+.modal-card::-webkit-scrollbar-thumb{background:#ffffff22}
+.modal-section{margin:16px 0 6px;font:9px var(--mono);letter-spacing:1.2px;color:var(--dim);border-bottom:1px solid #ffffff16;padding-bottom:6px}
+.inventory-note{font:11px/1.6 var(--mono);color:#a4ad9f;margin:12px 0 0}
+.pack-line{display:flex;align-items:center;gap:10px;margin-bottom:12px;font:9px var(--mono);color:#aeb6a6}
+.pack-line .meter{flex:1;height:4px}
+
+.equip-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:6px}
+.equip-slot{padding:9px 10px;border:1px solid #ffffff1c;background:#ffffff07;min-height:54px}
+.equip-slot span{display:block;font:8px var(--mono);color:var(--dim);letter-spacing:.8px;margin-bottom:4px}
+.equip-slot b{display:block;font:11px var(--sans);color:#e6eadf}
+.equip-slot small{display:block;font:8px var(--mono);color:#8f998b;margin-top:3px}
+
+.inv-list{display:grid;gap:5px}
+.inv-row{display:grid;grid-template-columns:1fr auto auto;align-items:center;gap:6px;padding:7px 9px;border:1px solid #ffffff16;background:#ffffff06}
+.inv-row .inv-name{font:11px var(--sans);color:#e4e8dc;display:flex;align-items:baseline;gap:7px}
+.inv-row .inv-name small{font:8px var(--mono);color:#7f897b}
+.inv-row .inv-actions{display:flex;gap:4px}
+.inv-row.equipped{border-color:#c8e27b66;background:#c8e27b0d}
+.empty-note{font:10px var(--mono);color:#7f897b;padding:12px 0}
+
+.recipe-list,.build-list{display:grid;gap:7px}
+.recipe-row,.build-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 10px;border:1px solid #ffffff18;background:#ffffff06}
+.recipe-row b,.build-row b{display:block;font:11px var(--sans);color:#e6eadf}
+.recipe-row small,.build-row small{display:block;font:8px/1.5 var(--mono);color:#8d978a;margin-top:3px}
+.cost{font:8px var(--mono);color:#a9b2a3}
+.cost .ok{color:#b9d77b}
+.cost .no{color:#e08b7a}
+
+.map-canvas{width:100%;height:auto;display:block;border:1px solid #ffffff1e;margin:6px 0 10px}
+.map-key{display:flex;gap:14px;font:8px var(--mono);color:#a4ad9d}
+.map-key span::before{content:'';display:inline-block;width:6px;height:6px;margin-right:5px;background:#c8e27b}
+.map-key span:nth-child(2)::before{background:#c98c75}
+.map-key span:nth-child(3)::before{background:#86aaa1}
+.map-key span:nth-child(4)::before{background:#9fc7d8}
+.map-key span:nth-child(5)::before{background:#b9a26a}
+
+.settings-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid #ffffff12;font:10px var(--mono);color:#c2c9bb}
+.settings-row:last-child{border-bottom:0}
+.seg{display:flex;gap:4px}
+.seg .mini-btn{padding:5px 7px}
+input[type=range]{width:130px;accent-color:#c8e27b}
+.settings-note{font:10px/1.6 var(--mono);color:#8b9587;margin-top:12px}
+
+.storage-cols{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.storage-col h4{margin:0 0 7px;font:9px var(--mono);letter-spacing:1px;color:var(--dim)}
+.storage-col .inv-list{gap:3px}
+.storage-col .inv-row{grid-template-columns:1fr auto;padding:6px 7px}
+.storage-col .inv-row .inv-actions button{padding:3px 6px}
+@media(max-width:520px){.storage-cols{grid-template-columns:1fr}.equip-grid{grid-template-columns:1fr}}
+
+.vehicle-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:7px;margin-bottom:12px}
+.vehicle-stat{padding:8px 10px;border:1px solid #ffffff16;background:#ffffff06;font:8px var(--mono);color:#8d978a}
+.vehicle-stat b{display:block;font:12px var(--mono);color:#e4e8dc;margin-top:4px}
+.vehicle-actions{display:flex;gap:6px;flex-wrap:wrap}
+
+/* interaction / hint urgency */
+.interaction-hint.vehicle .keycap{border-color:#9fc7d8;color:#c6e5f0}
+.interaction-hint.danger .keycap{border-color:var(--red);color:#ffc4b7}
+
+/* death */
+.death-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin:20px 0 6px;width:min(520px,86vw)}
+.death-stats div{padding:10px 8px;border:1px solid #ffffff1c;background:#ffffff08;text-align:center}
+.death-stats span{display:block;font:8px var(--mono);letter-spacing:.8px;color:#8b9587;margin-bottom:5px}
+.death-stats b{font:500 20px var(--display);color:#e9ece1;letter-spacing:1px}
+.dead-screen p{font:11px/1.6 var(--mono)}
+
+/* touch */
+.touch-crouch{display:none;position:absolute;left:24px;bottom:160px;width:62px;height:34px;border-radius:17px;border:1px solid #ffffff40;background:#111812b9;color:#dbe2d4;font:8px var(--mono);letter-spacing:.6px;touch-action:none}
+@media(max-width:900px),(pointer:coarse){.touch-crouch{display:block}}
+@media(max-width:700px){
+  .action-hints{display:none}
+  .sound-indicator{display:none}
+  .right-stack .objective{display:none}
+  .weapon-card{padding:9px 10px}
+  .weapon-card>b{font-size:14px}
+  .mini-vitals{gap:3px}
+  .mini-stat span{font-size:7px}
+  .mini-stat b{font-size:10px}
+  .conditions{margin-top:5px}
+  .cond-chip{font-size:7px;padding:2px 4px}
+  .feature-chips{display:none}
+  .survivor-card{width:150px}
+  .survivor-card small{font-size:8px}
+  .death-stats{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-height:620px){
+  .mini-vitals{display:none}
+  .conditions{display:none}
+  .feature-chips{display:none}
+  .survivor-select{margin:10px 0 2px}
+  .overlay .intro-copy{display:none}
+}
+
+/* quality presets */
+.q-low .grain{display:none}
+.q-low .panel{backdrop-filter:none}
+.q-low .weather-overlay{opacity:.7}
